@@ -1,18 +1,21 @@
 package com.duangframework.sdk.request;
 
-import com.duangframework.mvc.http.IRequest;
 import com.duangframework.sdk.common.AbstractClientRequest;
 import com.duangframework.sdk.common.HttpMethod;
-import com.duangframework.sdk.dto.ClientRequestBaseDto;
+import com.duangframework.sdk.dto.GetAllUserDto;
+
+import java.util.Map;
 
 /**
  * Created by laotang on 2018/12/31.
  */
 public class GetAllUserRequest extends AbstractClientRequest {
 
-    public GetAllUserRequest() {
-        super();
+    public GetAllUserRequest(GetAllUserDto getAllUserDto) {
+        super(getAllUserDto);
     }
+
+
 
     @Override
     public String getRequestApi() {
@@ -24,4 +27,6 @@ public class GetAllUserRequest extends AbstractClientRequest {
     public HttpMethod getMethod() {
         return HttpMethod.GET;
     }
+
+
 }

@@ -1,5 +1,7 @@
 package com.duangframework.sdk.common;
 
+import com.duangframework.sdk.utils.SdkUtils;
+
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -9,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ClientConfiguration {
 
-    public static final String DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
+    public static final String DEFAULT_USER_AGENT = SdkUtils.getDefaultUserAgent();
 
     public static final int DEFAULT_MAX_RETRIES = 3;
 
@@ -57,11 +59,16 @@ public class ClientConfiguration {
     protected boolean requestTimeoutEnabled = false;
     protected long slowRequestsThreshold = DEFAULT_SLOW_REQUESTS_THRESHOLD;
 
-    protected Map<String, String> defaultHeaders = new LinkedHashMap<String, String>();
-
     protected boolean crcCheckEnabled = true;
 
+    public static String DUANG_FIELD_PREFIX = "$duang$";
+    public static String DUANG_SIGN_KEY = "signkey";
 
+    protected static Map<String, String> DEFAULT_HEADERS = new LinkedHashMap<String, String>();
+
+    static {
+//        DEFAULT_HEADERS.put();
+    }
 
 
 }
