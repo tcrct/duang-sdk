@@ -24,16 +24,14 @@ import com.duangframework.sdk.security.EncryptDto;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
+import java.util.*;
 
 public class SdkUtils {
 
     private static final String VERSION_INFO_FILE = "versioninfo.properties";
     private static final String USER_AGENT_PREFIX = "duang-sdk-java";
     private static final String FRAMEWORK_OWNER = "duang";
+    private static final String RANDOM_STR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static String version = null;
 
@@ -143,5 +141,44 @@ public class SdkUtils {
             }
         }
         return signStr.toString();
+    }
+
+    // 随机生成16位字符串
+    public static String getRandomStr() {
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 16; i++) {
+            int number = random.nextInt(RANDOM_STR.length());
+            sb.append(RANDOM_STR.charAt(number));
+        }
+        return sb.toString();
+    }
+
+    // 生成4个字节的网络字节序
+    public static byte[] getNetworkBytesOrder(int sourceNumber) {
+        byte[] orderBytes = new byte[4];
+        orderBytes[3] = (byte) (sourceNumber & 0xFF);
+        orderBytes[2] = (byte) (sourceNumber >> 8 & 0xFF);
+        orderBytes[1] = (byte) (sourceNumber >> 16 & 0xFF);
+        orderBytes[0] = (byte) (sourceNumber >> 24 & 0xFF);
+        return orderBytes;
+    }
+
+    public static String getRequestHeaderTimeStamp(Map<String,String> valueMap){
+        String value = valueMap.get(HttpHeaderNames.DATE);
+        if(null == value || value.isEmpty()) {
+            value = Long.toString(System.currentTimeMillis());
+            valueMap.put(HttpHeaderNames.DATE, value);
+        }
+        return value;
+    }
+
+    public static String getRequestHeaderNonce(Map<String,String> valueMap){
+        String value = valueMap.get(HttpHeaderNames.NONCE);
+        if(null == value || value.isEmpty()) {
+            value = getRandomStr();
+            valueMap.put(HttpHeaderNames.NONCE, value);
+        }
+        return value;
     }
 }

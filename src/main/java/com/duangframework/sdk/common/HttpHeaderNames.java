@@ -93,6 +93,8 @@ public final class HttpHeaderNames {
     public static final String WWW_AUTHENTICATE = "www-authenticate";
     public static final String X_FRAME_OPTIONS = "x-frame-options";
 
+    public static final String NONCE = "nonce";
+
     private HttpHeaderNames() {
     }
 }

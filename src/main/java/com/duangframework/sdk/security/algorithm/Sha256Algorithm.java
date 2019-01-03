@@ -1,7 +1,8 @@
-package com.duangframework.sdk.utils;
+package com.duangframework.sdk.security.algorithm;
 
 import com.duangframework.sdk.security.Base64;
 import com.duangframework.sdk.security.EncryptDto;
+import com.duangframework.sdk.utils.SdkUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

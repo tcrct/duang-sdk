@@ -4,7 +4,9 @@ import com.duangframework.sdk.common.*;
 import com.duangframework.sdk.http.HttpRequest;
 import com.duangframework.sdk.http.HttpResult;
 import com.duangframework.sdk.security.EncryptDto;
+import com.duangframework.sdk.utils.SdkUtils;
 import com.duangframework.sdk.utils.SignUtils;
+import sun.rmi.runtime.Log;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -75,7 +77,12 @@ public class SdkClient {
         String uri = request.getRequestApi();
         Map<String,Object> paramsMap = request.getParamMap();
         // 参数签名
-        String signString = SignUtils.sign(new EncryptDto(uri, request.getHeaderMap(), paramsMap), credentialsProvider.getAppSecret());
+        String timeStamp = SdkUtils.getRequestHeaderTimeStamp(request.getHeaderMap());
+        String nonce = SdkUtils.getRequestHeaderNonce(request.getHeaderMap());
+        String key = credentialsProvider.getAppKey();
+        String secret = credentialsProvider.getAppSecret();
+        EncryptDto dto = new EncryptDto(uri, request.getHeaderMap(), paramsMap);
+        String signString = SignUtils.signSha1(dto, key, secret, timeStamp, nonce);
         paramsMap.put(configuration.DUANG_SIGN_KEY, signString);
         // 请求类型
         HttpMethod method = request.getMethod();

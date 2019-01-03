@@ -1,5 +1,7 @@
 package com.duangframework.sdk.security;
 
+import com.duangframework.sdk.utils.SdkUtils;
+
 import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
@@ -21,6 +23,15 @@ public class EncryptDto implements java.io.Serializable {
      * 请求URI
      */
     private String uri;
+    /**
+     *  时间戳
+     */
+    private String timestamp;
+    /**
+     * 随机字符串
+     */
+    private String nonce;
+
 
     public EncryptDto(String uri) {
         this.uri = uri;
@@ -30,6 +41,8 @@ public class EncryptDto implements java.io.Serializable {
         this.headers = headers;
         this.params = params;
         this.uri = uri;
+        this.timestamp = System.currentTimeMillis()+"";
+        this.nonce = SdkUtils.getRandomStr();
     }
 
     public Map<String, String> getHeaders() {
