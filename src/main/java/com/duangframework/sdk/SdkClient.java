@@ -77,11 +77,12 @@ public abstract class SdkClient {
         String api = request.getRequestApi();
         String uri = endPoint.toString() + (api.startsWith("/") ? api : "/"+ api);
         Map<String,Object> paramsMap = request.getParamMap();
+        Map<String,String> headerMap = request.getHeaderMap();
 
         String secret = credentialsProvider.getAppSecret();
-        EncryptDto dto = new EncryptDto(uri, request.getHeaderMap(), paramsMap);
-//        String timeStamp = SdkUtils.getRequestHeaderTimeStamp(request.getHeaderMap());
-//        String nonce = SdkUtils.getRequestHeaderNonce(request.getHeaderMap());
+        EncryptDto dto = new EncryptDto(uri, headerMap, paramsMap);
+//        String timeStamp = SdkUtils.getRequestHeaderTimeStamp(headerMap);
+//        String nonce = SdkUtils.getRequestHeaderNonce(headerMap);
 //        String key = credentialsProvider.getAppKey();
         // Sha1签名方式
 //        String signString = SignUtils.signSha1(dto, key, secret, timeStamp, nonce);
@@ -90,10 +91,9 @@ public abstract class SdkClient {
         paramsMap.put(configuration.DUANG_SIGN_KEY, signString);
         request.getHeaderMap().put(configuration.DUANG_HEADER_SIGN_KEY, signString);
 
-        // 设置请求头信息
-//        httpRequest.headers(request.getHeaderMap());
-        System.out.println(uri);
-        System.out.println(JSON.toJSONString(request));
+        System.out.println("url: " + uri);
+        System.out.println("headerMap: " + JSON.toJSONString(headerMap));
+        System.out.println("paramsMap: " + JSON.toJSONString(paramsMap));
 
         // 请求类型
         HttpMethod method = request.getMethod();
@@ -106,6 +106,9 @@ public abstract class SdkClient {
         } else {
             throw new IllegalArgumentException("暂不支持[\"" + method.name() +"\"]请求！");
         }
+
+        // 设置请求头信息
+        httpRequest.headers(request.getHeaderMap());
 
         // 请求返回信息
         HttpResult httpResult = new HttpResult(httpRequest);

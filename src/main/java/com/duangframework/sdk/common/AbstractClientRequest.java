@@ -21,11 +21,15 @@ public abstract class AbstractClientRequest implements SdkRequest {
 
 
     public AbstractClientRequest(BaseDto baseDto) {
-        this(new DuangId().toString(), null, baseDto);
+        this(new DuangId().toString(), baseDto);
     }
 
     public AbstractClientRequest(String requestId,  BaseDto baseDto) {
-        this(requestId, null, baseDto);
+        this(requestId, new HashMap<String, String>(), baseDto);
+    }
+
+    public AbstractClientRequest(Map<String,String> headerMap, BaseDto baseDto) {
+        this(new DuangId().toString(), headerMap, baseDto);
     }
 
     public AbstractClientRequest(String requestId, Map<String,String> headerMap, BaseDto baseDto) {
@@ -34,6 +38,10 @@ public abstract class AbstractClientRequest implements SdkRequest {
             this.headerMap.putAll(headerMap);
         }
         this.baseDto = baseDto;
+    }
+
+    public BaseDto getBaseDto() {
+        return baseDto;
     }
 
     public void setHeaderMap(Map<String, String> headerMap) {
