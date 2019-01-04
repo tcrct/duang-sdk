@@ -1,6 +1,7 @@
 package com.duangframework.sdk.common;
 
 import com.duangframework.sdk.annon.ApiParam;
+import com.duangframework.sdk.constant.Constant;
 import com.duangframework.sdk.utils.DuangId;
 import com.duangframework.sdk.utils.SdkUtils;
 
@@ -54,6 +55,10 @@ public abstract class AbstractClientRequest implements SdkRequest {
     @Override
     public Map<String, String> getHeaderMap() {
         return headerMap;
+    }
+
+    public String getContentType() {
+        return Constant.CONTENT_TYPE_JSON;
     }
 
     protected void setRequestApi(String requestApi, BaseDto baseDto) {
