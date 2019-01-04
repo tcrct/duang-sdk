@@ -19,6 +19,10 @@
 
 package com.duangframework.sdk.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.duangframework.sdk.common.HttpHeaderNames;
 import com.duangframework.sdk.security.EncryptDto;
 
@@ -167,7 +171,7 @@ public class SdkUtils {
         if(null == obj) return "";
         if(obj instanceof Collection)
             return join(separator,(Collection)obj).trim();
-        return (String)obj;
+        return obj+"";
     }
 
     private static  <T> String join(String separator, T... elements) {
@@ -194,4 +198,28 @@ public class SdkUtils {
             }
         }
     }
+
+
+    private static SerializeConfig jsonConfig = new SerializeConfig();
+
+    public static SerializerFeature[] serializerFeatureArray = {
+            SerializerFeature.QuoteFieldNames,
+            SerializerFeature.WriteNonStringKeyAsString,
+            SerializerFeature.DisableCircularReferenceDetect,
+            SerializerFeature.NotWriteRootClassName,
+            SerializerFeature.WriteDateUseDateFormat
+    };
+
+    public static String toJsonString(Object obj) {
+        return JSON.toJSONString(obj, jsonConfig, serializerFeatureArray);
+    }
+
+    public static String toJsonString(Object obj, SerializeFilter filter) {
+        return JSON.toJSONString(obj, jsonConfig, filter, serializerFeatureArray);
+    }
+
+    public static <T> T jsonParseObject(String jsonText, Class<T> clazz) {
+        return JSON.parseObject(jsonText, clazz);
+    }
+
 }

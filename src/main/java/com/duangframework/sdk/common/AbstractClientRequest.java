@@ -1,12 +1,17 @@
 package com.duangframework.sdk.common;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.duangframework.sdk.annon.ApiParam;
 import com.duangframework.sdk.constant.Constant;
+import com.duangframework.sdk.utils.DtoValueFilter;
 import com.duangframework.sdk.utils.DuangId;
 import com.duangframework.sdk.utils.SdkUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -77,19 +82,18 @@ public abstract class AbstractClientRequest implements SdkRequest {
         if(null == requestApi ||requestApi.isEmpty()){
             throw new NullPointerException("reqeustApi is null");
         }
-        Field[] fields = baseDto.getClass().getDeclaredFields();
-        if(null == fields || fields.length == 0) return requestApi;
-        for(Field field : fields) {
-            ApiParam apiParamAnnon = field.getAnnotation(ApiParam.class);
-            if(null != apiParamAnnon) {
-                Object value = SdkUtils.getFieldValue(baseDto, field);
-                String key = (null != apiParamAnnon.name()) ? "{"+ apiParamAnnon.name() +"}": "{"+field.getName()+"}";
-                if(null != value) {
-                    requestApi = requestApi.replace(key.trim(),  SdkUtils.convertObjectToString(value, ","));
-                } else {
-                    requestApi = requestApi.replace(key.trim(), "");
-                }
-            }
+
+        Map<String, Object> convertMap = new HashMap<>();
+        DtoValueFilter dtoValueFilter = new DtoValueFilter(convertMap);
+        convertMap.putAll(dtoValueFilter.getConvertMap());
+        JSONObject.toJSONString(baseDto, dtoValueFilter);
+        if(convertMap.isEmpty()) {
+            return requestApi;
+        }
+        for(Iterator<Map.Entry<String,Object>> iterator = convertMap.entrySet().iterator(); iterator.hasNext();){
+            Map.Entry<String,Object> entry = iterator.next();
+            String key = "{"+ entry.getKey() +"}";
+            requestApi = requestApi.replace(key.trim(),  SdkUtils.convertObjectToString(entry.getValue(), ","));
         }
         return requestApi;
     }
@@ -101,21 +105,14 @@ public abstract class AbstractClientRequest implements SdkRequest {
 
     @Override
     public Map<String, Object> getParamMap() {
-        Class<?> requestBaseDtoClass = baseDto.getClass();
-        Field[] fields = requestBaseDtoClass.getDeclaredFields();
-        Map<String,Object> paramsMap = new HashMap<String, Object>();
-        if(null == fields || fields.length <= 0) {
-            return paramsMap;
-        }
-        for(Field field : fields) {
-            if(field.getName().startsWith(ClientConfiguration.DUANG_FIELD_PREFIX)) {
-                continue;
-            }
-            Object value = SdkUtils.getFieldValue(baseDto, field);
-            if(null != value) {
-                paramsMap.put(field.getName(), value);
-            }
+        String json = SdkUtils.toJsonString(baseDto);
+        Map<String, Object> paramsMap = new HashMap<>();
+        if(null != json && !json.isEmpty()) {
+            paramsMap = SdkUtils.jsonParseObject(json, Map.class);
         }
         return paramsMap;
     }
+
+
+
 }
