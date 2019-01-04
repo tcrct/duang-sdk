@@ -1,5 +1,6 @@
 package com.duangframework.sdk;
 
+import com.alibaba.fastjson.JSON;
 import com.duangframework.sdk.common.*;
 import com.duangframework.sdk.http.HttpRequest;
 import com.duangframework.sdk.http.HttpResult;
@@ -16,7 +17,7 @@ import java.util.Map;
  * Created by laotang on 2018/12/30.
  * @since 1.0
  */
-public class SdkClient {
+public abstract class SdkClient {
 
     // 站点，即域名或IP部分，不包含URI
     private URI endPoint;
@@ -40,9 +41,8 @@ public class SdkClient {
         return endPoint;
     }
 
-    public void setEndPoint(String endpoint) {
-        URI uri = toURI(endpoint);
-        this.endPoint = uri;
+    private void setEndPoint(String endpoint) {
+        this.endPoint = toURI(endpoint);
     }
 
     public CredentialsProvider getCredentialsProvider() {
@@ -74,30 +74,38 @@ public class SdkClient {
 
     public SdkResponse execute(SdkRequest request) {
         HttpRequest httpRequest = null;
-        String uri = request.getRequestApi();
+        String api = request.getRequestApi();
+        String uri = endPoint.toString() + (api.startsWith("/") ? api : "/"+ api);
         Map<String,Object> paramsMap = request.getParamMap();
-        // 参数签名
-        String timeStamp = SdkUtils.getRequestHeaderTimeStamp(request.getHeaderMap());
-        String nonce = SdkUtils.getRequestHeaderNonce(request.getHeaderMap());
-        String key = credentialsProvider.getAppKey();
+
         String secret = credentialsProvider.getAppSecret();
         EncryptDto dto = new EncryptDto(uri, request.getHeaderMap(), paramsMap);
-        String signString = SignUtils.signSha1(dto, key, secret, timeStamp, nonce);
+//        String timeStamp = SdkUtils.getRequestHeaderTimeStamp(request.getHeaderMap());
+//        String nonce = SdkUtils.getRequestHeaderNonce(request.getHeaderMap());
+//        String key = credentialsProvider.getAppKey();
+        // Sha1签名方式
+//        String signString = SignUtils.signSha1(dto, key, secret, timeStamp, nonce);
+        // Sha256签名方式
+        String signString = SignUtils.signSha256(dto, secret);
         paramsMap.put(configuration.DUANG_SIGN_KEY, signString);
+        request.getHeaderMap().put(configuration.DUANG_HEADER_SIGN_KEY, signString);
+
+        // 设置请求头信息
+//        httpRequest.headers(request.getHeaderMap());
+        System.out.println(uri);
+        System.out.println(JSON.toJSONString(request));
+
         // 请求类型
         HttpMethod method = request.getMethod();
-        if(HttpMethod.GET.equals(method)) {
+        if(method.equals(HttpMethod.GET)) {
             httpRequest = HttpRequest.get(uri, paramsMap, true);
-        } else if (HttpRequest.METHOD_POST.equals(method)) {
+        } else if (method.equals(HttpMethod.POST)) {
             httpRequest = HttpRequest.post(uri, paramsMap, true);
-        } else if (HttpRequest.METHOD_OPTIONS.equals(method)) {
+        } else if (method.equals(HttpMethod.OPTIONS)) {
             httpRequest = HttpRequest.options(uri);
         } else {
             throw new IllegalArgumentException("暂不支持[\"" + method.name() +"\"]请求！");
         }
-
-        // 设置请求头信息
-        httpRequest.headers(request.getHeaderMap());
 
         // 请求返回信息
         HttpResult httpResult = new HttpResult(httpRequest);

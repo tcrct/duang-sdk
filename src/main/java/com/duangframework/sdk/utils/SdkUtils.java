@@ -28,19 +28,15 @@ import java.util.*;
 
 public class SdkUtils {
 
-    private static final String VERSION_INFO_FILE = "versioninfo.properties";
     private static final String USER_AGENT_PREFIX = "duang-sdk-java";
     private static final String FRAMEWORK_OWNER = "duang";
     private static final String RANDOM_STR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    private static String version = null;
+    private static String version = "1.0.0";
 
     private static String defaultUserAgent = null;
 
     public static String getVersion() {
-        if (version == null) {
-            initializeVersion();
-        }
         return version;
     }
 
@@ -51,22 +47,6 @@ public class SdkUtils {
                     + System.getProperty("java.version") + ")";
         }
         return defaultUserAgent;
-    }
-
-    private static void initializeVersion() {
-        InputStream inputStream = SdkUtils.class.getClassLoader().getResourceAsStream(VERSION_INFO_FILE);
-        Properties versionInfoProperties = new Properties();
-        try {
-            if (inputStream == null) {
-                throw new IllegalArgumentException(VERSION_INFO_FILE + " not found on classpath");
-            }
-
-            versionInfoProperties.load(inputStream);
-            version = versionInfoProperties.getProperty("version");
-        } catch (Exception e) {
-            System.out.println("Unable to load version information for the running SDK: " + e.getMessage());
-            version = "unknown-version";
-        }
     }
 
     /**
@@ -180,5 +160,38 @@ public class SdkUtils {
             valueMap.put(HttpHeaderNames.NONCE, value);
         }
         return value;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static String convertObjectToString(Object obj, String separator) {
+        if(null == obj) return "";
+        if(obj instanceof Collection)
+            return join(separator,(Collection)obj).trim();
+        return (String)obj;
+    }
+
+    private static  <T> String join(String separator, T... elements) {
+        Object[] array = (Object[])elements;
+        if (array == null) {
+            return null;
+        } else {
+            int startIndex = 0;
+            int endIndex = array.length;
+            int noOfItems = endIndex - startIndex;
+            if (noOfItems <= 0) {
+                return "";
+            } else {
+                StringBuilder buf = new StringBuilder(noOfItems * 16);
+                for(int i = startIndex; i < endIndex; ++i) {
+                    if (i > startIndex) {
+                        buf.append(separator);
+                    }
+                    if (array[i] != null) {
+                        buf.append(array[i]);
+                    }
+                }
+                return buf.toString();
+            }
+        }
     }
 }

@@ -63,12 +63,7 @@ public class ClientConfiguration {
 
     public static String DUANG_FIELD_PREFIX = "$duang$";
     public static String DUANG_SIGN_KEY = "signkey";
-
-    protected static Map<String, String> DEFAULT_HEADERS = new LinkedHashMap<String, String>();
-
-    static {
-//        DEFAULT_HEADERS.put();
-    }
+    public static String DUANG_HEADER_SIGN_KEY = "Duang-Ca-Signature";
 
 
 }

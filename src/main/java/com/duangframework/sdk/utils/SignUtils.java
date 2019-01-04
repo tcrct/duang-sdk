@@ -36,6 +36,7 @@ public class SignUtils {
             String encrypt = algorithm.encrypt(nonce, replyMsg);
             return SHA1Algorithm.getSHA1(secret, timeStamp, nonce, encrypt);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new AesException(AesException.ValidateSignatureError);
         }
     }

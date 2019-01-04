@@ -12,4 +12,5 @@ public interface SdkRequest {
     HttpMethod getMethod();
     Map<String,Object> getParamMap();
     Map<String,String> getHeaderMap();
+    String getContentType();
 }
