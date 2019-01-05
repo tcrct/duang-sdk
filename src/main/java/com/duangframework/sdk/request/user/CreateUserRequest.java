@@ -3,7 +3,7 @@ package com.duangframework.sdk.request.user;
 import com.duangframework.sdk.common.AbstractClientRequest;
 import com.duangframework.sdk.common.HttpMethod;
 import com.duangframework.sdk.constant.Constant;
-import com.signetz.openapi.dto.CreateUserDto;
+import com.duangframework.sdk.dto.user.CreateUserDto;
 
 import java.util.Map;
 
