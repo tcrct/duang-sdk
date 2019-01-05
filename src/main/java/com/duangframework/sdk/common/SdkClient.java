@@ -1,4 +1,4 @@
-package com.duangframework.sdk;
+package com.duangframework.sdk.common;
 
 import com.alibaba.fastjson.JSON;
 import com.duangframework.sdk.common.*;
