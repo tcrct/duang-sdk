@@ -1,7 +1,7 @@
 package com.duangframework.sdk.dto.user;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.duangframework.sdk.common.BaseDto;
+import com.duangframework.sdk.annon.ApiParam;
+import com.duangframework.sdk.common.SdkDto;
 
 /**
  * 创建用户
@@ -11,10 +11,14 @@ import com.duangframework.sdk.common.BaseDto;
  * @date 2019-01-04
  *
  */
-public class CreateUserDto extends BaseDto {
+public class CreateUserDto extends SdkDto {
 
-//    @ApiParam(name = "username")
-    @JSONField(name = "username")
+    /**
+     * 请求的API地址
+     */
+    private String REQUEST_API = "/signet-api/Account/create/{USERNAME}/{context_bady}";
+
+    @ApiParam(label = "USERNAME", name = "username")
     private String account; // 帐号
     private String password;    //密码
     private String email;       // 邮件地址

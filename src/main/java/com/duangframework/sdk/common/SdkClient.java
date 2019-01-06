@@ -1,23 +1,25 @@
 package com.duangframework.sdk.common;
 
-import com.alibaba.fastjson.JSON;
-import com.duangframework.sdk.common.*;
+import com.duangframework.sdk.constant.Constant;
+import com.duangframework.sdk.enums.HttpMethod;
 import com.duangframework.sdk.http.HttpRequest;
 import com.duangframework.sdk.http.HttpResult;
 import com.duangframework.sdk.security.EncryptDto;
+import com.duangframework.sdk.utils.JsonUtils;
 import com.duangframework.sdk.utils.SdkUtils;
 import com.duangframework.sdk.utils.SignUtils;
-import sun.rmi.runtime.Log;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Created by laotang on 2018/12/30.
  * @since 1.0
  */
-public abstract class SdkClient {
+public class SdkClient {
 
     // 站点，即域名或IP部分，不包含URI
     private URI endPoint;
@@ -72,13 +74,35 @@ public abstract class SdkClient {
         }
     }
 
-    public SdkResponse execute(SdkRequest request) {
+    /**
+     * header头信息
+     * @return
+     */
+    private Map<String, String> builderHeader(AbstractSdkRequest request) {
+        Map<String, String> headers = request.getHeaderMap();
+        Map<String, String> headerMap = new HashMap<String, String>();
+        headerMap.put(HttpHeaderNames.AUTHORIZATION, Constant.DUANG_FIELD_PREFIX);
+        headerMap.put(HttpHeaderNames.DATE, Long.toString(System.currentTimeMillis()));
+        headerMap.put(HttpHeaderNames.USER_AGENT, SdkUtils.getDefaultUserAgent());
+        headerMap.put(HttpHeaderNames.CONTENT_TYPE, request.getContentType());
+        if(null != headers && !headers.isEmpty()) {
+            for(Iterator<Map.Entry<String,String>> iterator = headers.entrySet().iterator(); iterator.hasNext();){
+                Map.Entry<String,String> entry = iterator.next();
+                String value = entry.getValue();
+                if(null != value && !value.isEmpty()) {
+                    headerMap.put(entry.getKey(), value);
+                }
+            }
+        }
+        return headerMap;
+    }
+
+    public SdkResponse execute(AbstractSdkRequest request) {
         HttpRequest httpRequest = null;
         String api = request.getRequestApi();
         String uri = endPoint.toString() + (api.startsWith("/") ? api : "/"+ api);
         Map<String,Object> paramsMap = request.getParamMap();
-        Map<String,String> headerMap = request.getHeaderMap();
-
+        Map<String,String> headerMap = builderHeader(request);
         String secret = credentialsProvider.getAppSecret();
         EncryptDto dto = new EncryptDto(uri, headerMap, paramsMap);
 //        String timeStamp = SdkUtils.getRequestHeaderTimeStamp(headerMap);
@@ -88,19 +112,19 @@ public abstract class SdkClient {
 //        String signString = SignUtils.signSha1(dto, key, secret, timeStamp, nonce);
         // Sha256签名方式
         String signString = SignUtils.signSha256(dto, secret);
-        paramsMap.put(configuration.DUANG_SIGN_KEY, signString);
-        request.getHeaderMap().put(configuration.DUANG_HEADER_SIGN_KEY, signString);
+        paramsMap.put(Constant.DUANG_SIGN_KEY, signString);
+        request.getHeaderMap().put(Constant.DUANG_HEADER_SIGN_KEY, signString);
 
         System.out.println("url: " + uri);
-        System.out.println("headerMap: " + JSON.toJSONString(headerMap));
-        System.out.println("paramsMap: " + JSON.toJSONString(paramsMap));
+        System.out.println("headerMap: " + JsonUtils.toJson(headerMap));
+        System.out.println("paramsMap: " + JsonUtils.toJson(paramsMap));
 
         // 请求类型
         HttpMethod method = request.getMethod();
         if(method.equals(HttpMethod.GET)) {
             httpRequest = HttpRequest.get(uri, paramsMap, true);
         } else if (method.equals(HttpMethod.POST)) {
-            httpRequest = HttpRequest.post(uri, paramsMap, true);
+            httpRequest = HttpRequest.post(uri, true).send(JsonUtils.toJson(paramsMap).getBytes());
         } else if (method.equals(HttpMethod.OPTIONS)) {
             httpRequest = HttpRequest.options(uri);
         } else {

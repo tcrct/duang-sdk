@@ -1,5 +1,7 @@
 package com.duangframework.sdk.common;
 
+import com.duangframework.sdk.enums.HttpMethod;
+
 import java.util.Map;
 
 /**

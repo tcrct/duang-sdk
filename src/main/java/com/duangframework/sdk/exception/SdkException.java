@@ -1,6 +1,6 @@
 package com.duangframework.sdk.exception;
 
-public class AesException extends RuntimeException {
+public class SdkException extends RuntimeException {
 
     public final static int OK = 0;
     public final static int ValidateSignatureError = -40001;
@@ -50,7 +50,7 @@ public class AesException extends RuntimeException {
         return code;
     }
 
-    public AesException(int code) {
+    public SdkException(int code) {
         super(getMessage(code));
         this.code = code;
     }

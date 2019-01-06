@@ -19,14 +19,12 @@
 
 package com.duangframework.sdk.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializeFilter;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.duangframework.sdk.annon.ApiParam;
 import com.duangframework.sdk.common.HttpHeaderNames;
+import com.duangframework.sdk.common.KvModle;
+import com.duangframework.sdk.common.SdkDto;
 import com.duangframework.sdk.security.EncryptDto;
 
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -51,6 +49,18 @@ public class SdkUtils {
                     + System.getProperty("java.version") + ")";
         }
         return defaultUserAgent;
+    }
+
+    public static String getEndPoint() {
+        return PropertiesUtils.getInstance().getEndPoint();
+    }
+
+    public static String getAppKey() {
+        return PropertiesUtils.getInstance().getAppKey();
+    }
+
+    public static String getAppSecret() {
+        return PropertiesUtils.getInstance().getAppSecret();
     }
 
     /**
@@ -199,27 +209,37 @@ public class SdkUtils {
         }
     }
 
-
-    private static SerializeConfig jsonConfig = new SerializeConfig();
-
-    public static SerializerFeature[] serializerFeatureArray = {
-            SerializerFeature.QuoteFieldNames,
-            SerializerFeature.WriteNonStringKeyAsString,
-            SerializerFeature.DisableCircularReferenceDetect,
-            SerializerFeature.NotWriteRootClassName,
-            SerializerFeature.WriteDateUseDateFormat
-    };
-
-    public static String toJsonString(Object obj) {
-        return JSON.toJSONString(obj, jsonConfig, serializerFeatureArray);
+    public static KvModle dto2KvModle(SdkDto sdkDto) {
+        Map<String,Object> restfulApiMap = new HashMap<>();
+        Map<String,Object> dtoMap = new HashMap<>();
+        dto2Map(sdkDto, restfulApiMap, dtoMap);
+        return new KvModle(restfulApiMap, dtoMap);
     }
 
-    public static String toJsonString(Object obj, SerializeFilter filter) {
-        return JSON.toJSONString(obj, jsonConfig, filter, serializerFeatureArray);
+    private static void dto2Map(SdkDto sdkDto, Map<String,Object> restfulApiMap, Map<String,Object> dtoMap) {
+        Field[] fields = sdkDto.getClass().getDeclaredFields();
+        if(null != fields) {
+            for(Field field : fields) {
+                Object value = getFieldValue(sdkDto, field);
+                if(null != value) {
+                    if(value instanceof SdkDto) {
+                        Map<String, Object> itemMap = new HashMap<>();
+                        dto2Map((SdkDto) value, restfulApiMap, itemMap);
+                        dtoMap.put(field.getName(), itemMap);
+                    } else {
+                        ApiParam apiParam = field.getAnnotation(ApiParam.class);
+                        String key = field.getName();
+                        if(null != apiParam) {
+                            key = apiParam.name();
+                            String label = apiParam.label();
+                            if(!label.isEmpty()) {
+                                restfulApiMap.put(label, value);
+                            }
+                        }
+                        dtoMap.put(key, value);
+                    }
+                }
+            }
+        }
     }
-
-    public static <T> T jsonParseObject(String jsonText, Class<T> clazz) {
-        return JSON.parseObject(jsonText, clazz);
-    }
-
 }

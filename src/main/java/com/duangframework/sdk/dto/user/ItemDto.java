@@ -1,11 +1,12 @@
 package com.duangframework.sdk.dto.user;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.duangframework.sdk.annon.ApiParam;
+import com.duangframework.sdk.common.SdkDto;
 
-public class ItemDto {
+public class ItemDto extends SdkDto {
 
     private String id;
-    @JSONField(label = "context_bady", name = "context")
+    @ApiParam(label = "context_bady", name = "context")
     private String body;
 
     public ItemDto() {

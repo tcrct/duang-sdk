@@ -8,7 +8,7 @@
 
 package com.duangframework.sdk.security.algorithm;
 
-import com.duangframework.sdk.exception.AesException;
+import com.duangframework.sdk.exception.SdkException;
 import com.duangframework.sdk.security.Base64;
 import com.duangframework.sdk.security.ByteGroup;
 import com.duangframework.sdk.security.EncryptDto;
@@ -30,9 +30,9 @@ public class PKCS7Algorithm {
 	private byte[] appSecret;
 	private String appKey;
 
-	public PKCS7Algorithm(String appKey, String appSecret, String receiveid) throws AesException {
+	public PKCS7Algorithm(String appKey, String appSecret, String receiveid) throws SdkException {
 		if (appSecret.length() != 43) {
-			throw new AesException(AesException.IllegalAesKey);
+			throw new SdkException(SdkException.IllegalAesKey);
 		}
 		this.appSecret = Base64.decode(appSecret + "=");
 		this.receiveid = receiveid;
@@ -44,9 +44,9 @@ public class PKCS7Algorithm {
 	 *
 	 * @param text 需要加密的明文
 	 * @return 加密后base64编码的字符串
-	 * @throws AesException aes加密失败
+	 * @throws SdkException aes加密失败
 	 */
-	public String encrypt(String randomStr, String text) throws AesException {
+	public String encrypt(String randomStr, String text) throws SdkException {
 		ByteGroup byteCollector = new ByteGroup();
 		byte[] randomStrBytes = randomStr.getBytes(CHARSET);
 		byte[] textBytes = text.getBytes(CHARSET);
@@ -82,7 +82,7 @@ public class PKCS7Algorithm {
 			return base64Encrypted;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new AesException(AesException.EncryptAESError);
+			throw new SdkException(SdkException.EncryptAESError);
 		}
 	}
 
@@ -144,9 +144,9 @@ public class PKCS7Algorithm {
 	 * @param nonce 随机串，可以自己生成，也可以用URL参数的nonce
 	 *
 	 * @return 加密后的可以直接回复用户的密文，包括msg_signature, timestamp, nonce, encrypt的xml格式的字符串
-	 * @throws AesException 执行失败，请查看该异常的错误码和具体的错误信息
+	 * @throws SdkException 执行失败，请查看该异常的错误码和具体的错误信息
 	 */
-	public String encrypt(EncryptDto dto, String nonce) throws AesException {
+	public String encrypt(EncryptDto dto, String nonce) throws SdkException {
 		String replyMsg = SdkUtils.buildEncryptString(dto);
 		// 加密
 		String encrypt = encrypt(nonce, replyMsg);

@@ -8,7 +8,7 @@
 
 package com.duangframework.sdk.security.algorithm;
 
-import com.duangframework.sdk.exception.AesException;
+import com.duangframework.sdk.exception.SdkException;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -33,9 +33,9 @@ public class SHA1Algorithm {
 	 * @param nonce 随机字符串
 	 * @param encrypt 密文
 	 * @return 安全签名
-	 * @throws AesException
+	 * @throws SdkException
 	 */
-	public static String getSHA1(String token, String timestamp, String nonce, String encrypt) throws AesException  {
+	public static String getSHA1(String token, String timestamp, String nonce, String encrypt) throws SdkException {
 		try {
 			String[] array = new String[] { token, timestamp, nonce, encrypt };
 			StringBuffer sb = new StringBuffer();
@@ -61,7 +61,7 @@ public class SHA1Algorithm {
 			}
 			return hexstr.toString();
 		} catch (Exception e) {
-			throw new AesException(AesException.ComputeSignatureError);
+			throw new SdkException(SdkException.ComputeSignatureError);
 		}
 	}
 }

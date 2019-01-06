@@ -1,6 +1,6 @@
 package com.duangframework.sdk.utils;
 
-import com.duangframework.sdk.exception.AesException;
+import com.duangframework.sdk.exception.SdkException;
 import com.duangframework.sdk.security.EncryptDto;
 import com.duangframework.sdk.security.algorithm.PKCS7Algorithm;
 import com.duangframework.sdk.security.algorithm.SHA1Algorithm;
@@ -37,7 +37,7 @@ public class SignUtils {
             return SHA1Algorithm.getSHA1(secret, timeStamp, nonce, encrypt);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new AesException(AesException.ValidateSignatureError);
+            throw new SdkException(SdkException.ValidateSignatureError);
         }
     }
 

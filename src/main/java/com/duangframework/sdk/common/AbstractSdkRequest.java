@@ -1,15 +1,10 @@
 package com.duangframework.sdk.common;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.duangframework.sdk.annon.ApiParam;
 import com.duangframework.sdk.constant.Constant;
-import com.duangframework.sdk.utils.DtoValueFilter;
+import com.duangframework.sdk.enums.ContentType;
 import com.duangframework.sdk.utils.DuangId;
 import com.duangframework.sdk.utils.SdkUtils;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,37 +12,38 @@ import java.util.Map;
 /**
  * Created by laotang on 2018/12/31.
  */
-public abstract class AbstractClientRequest implements SdkRequest {
+public abstract class AbstractSdkRequest implements SdkRequest {
 
-    private String requestId ;
+    private String token ;
     protected String requestApi;
-    protected BaseDto baseDto;
+    protected SdkDto sdkDto;
     protected boolean isRestfulApi = false;
     private Map<String, String> headerMap = new HashMap<String, String>();
+    private KvModle kvModle;
 
-
-    public AbstractClientRequest(BaseDto baseDto) {
-        this(new DuangId().toString(), baseDto);
+    public AbstractSdkRequest(SdkDto sdkDto) {
+        this("", sdkDto);
     }
 
-    public AbstractClientRequest(String requestId,  BaseDto baseDto) {
-        this(requestId, new HashMap<String, String>(), baseDto);
+    public AbstractSdkRequest(String token, SdkDto sdkDto) {
+        this(token, new HashMap<String, String>(), sdkDto);
     }
 
-    public AbstractClientRequest(Map<String,String> headerMap, BaseDto baseDto) {
-        this(new DuangId().toString(), headerMap, baseDto);
+    public AbstractSdkRequest(Map<String,String> headerMap, SdkDto sdkDto) {
+        this("", headerMap, sdkDto);
     }
 
-    public AbstractClientRequest(String requestId, Map<String,String> headerMap, BaseDto baseDto) {
-        this.requestId = requestId;
+    public AbstractSdkRequest(String token, Map<String,String> headerMap, SdkDto sdkDto) {
+        this.token = (null ==token || token.isEmpty()) ? new DuangId().toString() : token;
         if(null != headerMap &&!headerMap.isEmpty()) {
             this.headerMap.putAll(headerMap);
         }
-        this.baseDto = baseDto;
+        this.sdkDto = sdkDto;
+        this.kvModle = SdkUtils.dto2KvModle(sdkDto);
     }
 
-    public BaseDto getBaseDto() {
-        return baseDto;
+    public SdkDto getSdkDto() {
+        return sdkDto;
     }
 
     public void setHeaderMap(Map<String, String> headerMap) {
@@ -63,31 +59,27 @@ public abstract class AbstractClientRequest implements SdkRequest {
     }
 
     public String getContentType() {
-        return Constant.CONTENT_TYPE_JSON;
+        return ContentType.JSON.getValue();
     }
 
-    protected void setRequestApi(String requestApi, BaseDto baseDto) {
+    protected void setRequestApi(String requestApi, SdkDto sdkDto) {
         boolean isRestful = isRestful();
         if(!isRestful) {
             isRestful = requestApi.indexOf("{") > -1 && requestApi.indexOf("}") > -1;
         }
         if(isRestful) {
-            this.requestApi = buildRestfulRequestApi(requestApi, baseDto);
+            this.requestApi = buildRestfulRequestApi(requestApi, sdkDto);
         } else {
             this.requestApi = requestApi;
         }
     }
 
-    private String buildRestfulRequestApi(String requestApi, BaseDto baseDto) {
+    private String buildRestfulRequestApi(String requestApi, SdkDto sdkDto) {
         if(null == requestApi ||requestApi.isEmpty()){
             throw new NullPointerException("reqeustApi is null");
         }
-
-        Map<String, Object> convertMap = new HashMap<>();
-        DtoValueFilter dtoValueFilter = new DtoValueFilter(convertMap);
-        convertMap.putAll(dtoValueFilter.getConvertMap());
-        JSONObject.toJSONString(baseDto, dtoValueFilter);
-        if(convertMap.isEmpty()) {
+        Map<String, Object> convertMap = kvModle.getRestfulApiMap();
+        if(null == convertMap || convertMap.isEmpty()) {
             return requestApi;
         }
         for(Iterator<Map.Entry<String,Object>> iterator = convertMap.entrySet().iterator(); iterator.hasNext();){
@@ -105,14 +97,9 @@ public abstract class AbstractClientRequest implements SdkRequest {
 
     @Override
     public Map<String, Object> getParamMap() {
-        String json = SdkUtils.toJsonString(baseDto);
-        Map<String, Object> paramsMap = new HashMap<>();
-        if(null != json && !json.isEmpty()) {
-            paramsMap = SdkUtils.jsonParseObject(json, Map.class);
-        }
-        return paramsMap;
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put(Constant.TOKEN_FIELD, token);
+        dataMap.put(Constant.DATA_FIELD, kvModle.getDtoMap());
+        return dataMap;
     }
-
-
-
 }
