@@ -61,7 +61,7 @@ public class Demo
 /**
  * 创建用户DTO
  */
-class CreateUserDto extends SdkDto {
+class CreateUserDto<T> extends SdkDto<T> {
     /**
      * 请求的API地址
      */
@@ -73,7 +73,7 @@ class CreateUserDto extends SdkDto {
     private String email;       // 邮件地址
     private String department; // 部门
     private Integer sex; // 性别(0男1女)
-    private ItemDto item;
+    private T item;
 
     public CreateUserDto() {
     }
@@ -86,11 +86,11 @@ class CreateUserDto extends SdkDto {
         this.sex = sex;
     }
 
-    public ItemDto getItem() {
+    public T getItem() {
         return item;
     }
 
-    public void setItem(ItemDto item) {
+    public void setItem(T item) {
         this.item = item;
     }
 
