@@ -19,11 +19,11 @@
 
 package com.duangframework.sdk.utils;
 
+import com.duangframework.encrypt.core.EncryptDto;
 import com.duangframework.sdk.annon.ApiParam;
 import com.duangframework.sdk.common.HttpHeaderNames;
 import com.duangframework.sdk.common.KvModle;
 import com.duangframework.sdk.common.SdkDto;
-import com.duangframework.sdk.security.EncryptDto;
 
 import java.lang.reflect.Field;
 import java.util.*;

@@ -65,7 +65,7 @@ class CreateUserDto<T> extends SdkDto<T> {
     /**
      * 请求的API地址
      */
-    private String REQUEST_API = "/signet-api/Account/create/{USERNAME}/{context_bady}";
+    private String REQUEST_API = "/user/register";
 
     @ApiParam(label = "USERNAME", name = "username")
     private String account; // 帐号
@@ -186,7 +186,7 @@ class CreateUserRequest extends AbstractSdkRequest {
     /**
      * 请求的API地址
      */
-    private static final String API = "/signet-api/Account/create/{USERNAME}/{context_bady}";
+    private static final String API = "/user/register";
 
     @Override
     public String getRequestApi() {
