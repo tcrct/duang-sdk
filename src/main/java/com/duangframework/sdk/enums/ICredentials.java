@@ -22,4 +22,10 @@ public interface ICredentials {
      * @return
      */
     String getAppSecret();
+
+    /**
+     * 是否参数加密后发送请求
+     * @return
+     */
+    boolean isParamEncrypt();
 }

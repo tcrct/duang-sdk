@@ -63,6 +63,11 @@ public class SdkUtils {
         return PropertiesUtils.getInstance().getAppSecret();
     }
 
+    public static boolean isParamEncrypt() {
+        return PropertiesUtils.getInstance().isParamEncrypt();
+    }
+
+
     /**
      * 获取成员变量
      * @param  obj 对象

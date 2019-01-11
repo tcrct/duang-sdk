@@ -14,6 +14,7 @@ public class PropertiesUtils {
     private static PropertiesUtils propertiesUtils;
     private static ICredentials credentials;
 
+
     private PropertiesUtils() {
         initProperties();
     }
@@ -33,6 +34,14 @@ public class PropertiesUtils {
     public String getAppSecret() {
         return credentials.getAppSecret();
     }
+    public boolean isParamEncrypt() {
+        return credentials.isParamEncrypt();
+    }
+
+//    public String get(String key) {
+//        return properties.getProperty(key);
+//    }
+
 
     private void initProperties() {
         InputStream inputStream = PropertiesUtils.class.getClassLoader().getResourceAsStream(Constant.SDK_INFO_FILE);
@@ -46,6 +55,7 @@ public class PropertiesUtils {
             final String endPoint = properties.getProperty(Constant.ENDPOINT_FIELD);
             final String appKey = properties.getProperty(Constant.APPKEY_FIELD);
             final String appSecret = properties.getProperty(Constant.APPSECRET_FIELD);
+            final boolean isParamEncrypt = Boolean.valueOf(properties.getProperty(Constant.PARAM_ENCRYPT_FIELD)).booleanValue();
 
             credentials = new ICredentials() {
                 @Override
@@ -61,6 +71,11 @@ public class PropertiesUtils {
                 @Override
                 public String getAppSecret() {
                     return appSecret;
+                }
+
+                @Override
+                public boolean isParamEncrypt() {
+                    return isParamEncrypt;
                 }
             };
         } catch (Exception e) {

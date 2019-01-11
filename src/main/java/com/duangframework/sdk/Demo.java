@@ -52,7 +52,7 @@ public class Demo
 
     private static void demo2(CreateUserDto createUserDto) {
         // 可以设置为全局变量
-        SdkClient client = new SdkClient(SdkUtils.getEndPoint(), SdkUtils.getAppKey(), SdkUtils.getAppSecret());
+        SdkClient client = new SdkClient(SdkUtils.getEndPoint(), SdkUtils.getAppKey(), SdkUtils.getAppSecret(), SdkUtils.isParamEncrypt());
         SdkResponse response = client.execute(new CreateUserRequest(createUserDto));
         System.out.println(response.getResult());
     }

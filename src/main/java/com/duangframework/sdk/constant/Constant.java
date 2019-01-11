@@ -7,6 +7,7 @@ public class Constant {
     public static final String ENDPOINT_FIELD = "endPoint";
     public static final String APPKEY_FIELD = "appKey";
     public static final String APPSECRET_FIELD = "appSecret";
+    public static final String PARAM_ENCRYPT_FIELD = "param.encrypt";
 
     public static String DUANG_FIELD_PREFIX = "duang";
     public static String DUANG_SIGN_KEY = "signature";
