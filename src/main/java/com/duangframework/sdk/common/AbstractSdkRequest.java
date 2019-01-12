@@ -97,9 +97,6 @@ public abstract class AbstractSdkRequest implements SdkRequest {
 
     @Override
     public Map<String, Object> getParamMap() {
-        Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put(Constant.TOKEN_FIELD, token);
-        dataMap.put(Constant.DATA_FIELD, kvModle.getDtoMap());
-        return dataMap;
+        return kvModle.getDtoMap();
     }
 }

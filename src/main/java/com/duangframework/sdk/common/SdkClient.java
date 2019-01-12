@@ -7,6 +7,7 @@ import com.duangframework.sdk.constant.Constant;
 import com.duangframework.sdk.enums.HttpMethod;
 import com.duangframework.sdk.http.HttpRequest;
 import com.duangframework.sdk.http.HttpResult;
+import com.duangframework.sdk.utils.DuangId;
 import com.duangframework.sdk.utils.JsonUtils;
 import com.duangframework.sdk.utils.SdkUtils;
 import com.duangframework.encrypt.core.EncryptDto;
@@ -30,7 +31,7 @@ public class SdkClient {
     // 配置对象
     private ClientConfiguration configuration;
     // 是否参数加密码后发送请求
-    private Boolean isParamEncrypt;
+    private boolean isParamEncrypt;
 
     public SdkClient(String endpoint, String appKey, String appSecret) {
         this(endpoint, new CredentialsProvider(appKey, appSecret), false, new ClientConfiguration());
@@ -97,6 +98,7 @@ public class SdkClient {
         headerMap.put(HttpHeaderNames.CONTENT_TYPE, request.getContentType());
         headerMap.put(HttpHeaderNames.DATE, System.currentTimeMillis()+"");
         headerMap.put(HttpHeaderNames.NONCE, EncryptUtils.getRandomStr());
+        headerMap.put(Constant.REQUEST_ID, new DuangId().toString());
         if(null != headers && !headers.isEmpty()) {
             for(Iterator<Map.Entry<String,String>> iterator = headers.entrySet().iterator(); iterator.hasNext();){
                 Map.Entry<String,String> entry = iterator.next();
@@ -118,24 +120,20 @@ public class SdkClient {
         String url = endPoint.toString() + api;
         Map<String,Object> paramsMap = request.getParamMap();
         Map<String,String> headerMap = builderHeader(appKey, request);
-        EncryptDto dto = new EncryptDto(api, headerMap, paramsMap);
-//        String timeStamp = SdkUtils.getRequestHeaderTimeStamp(headerMap);
-//        String nonce = SdkUtils.getRequestHeaderNonce(headerMap);
-//        String key = credentialsProvider.getAppKey();
-        // Sha1签名方式
-//        String signString = SignUtils.signSha1(dto, key, secret, timeStamp, nonce);
-        // Sha256签名方式
-        String signString = EncryptFactory.signSha256(dto, appSecret);
-        paramsMap.put(Constant.DUANG_SIGN_KEY, signString);
-        headerMap.put(Constant.DUANG_ENCRYPT_TYPE, EncryptType.SHA256.name());
-        headerMap.put(Constant.DUANG_HEADER_SIGN_KEY, signString);
-
         // 请求类型
         HttpMethod method = request.getMethod();
         String body = method.equals(HttpMethod.GET)? HttpRequest.append(url, paramsMap) : JsonUtils.toJson(paramsMap);
         // 参数加密后发送请求
         if(isParamEncrypt) {
-            body = EncryptFactory.encrypt(dto, appKey, appSecret, headerMap.get(HttpHeaderNames.NONCE));
+            body = EncryptFactory.encrypt(body, appSecret);
+            headerMap.put(Constant.DUANG_ENCRYPT, isParamEncrypt+"");
+        } else {
+            // 签名
+            EncryptDto dto = new EncryptDto(api, headerMap, paramsMap);
+            // Sha256签名方式
+            String signString = EncryptFactory.signSha256(dto, appSecret);
+            // 将签名字符串设置到header头
+            headerMap.put(Constant.DUANG_HEADER_SIGN_KEY, signString);
         }
         System.out.println("@@@@@@@@@@@: " + body);
         if(method.equals(HttpMethod.GET)) {
