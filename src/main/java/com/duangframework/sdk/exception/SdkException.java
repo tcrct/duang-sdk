@@ -50,6 +50,11 @@ public class SdkException extends RuntimeException {
         return code;
     }
 
+    public SdkException(int code, String message) {
+        super(message);
+        this.code = code;
+    }
+
     public SdkException(int code) {
         super(getMessage(code));
         this.code = code;

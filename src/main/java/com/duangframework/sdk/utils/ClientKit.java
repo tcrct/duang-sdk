@@ -4,6 +4,7 @@ import com.duangframework.sdk.common.*;
 import com.duangframework.sdk.constant.Constant;
 import com.duangframework.sdk.enums.ContentType;
 import com.duangframework.sdk.enums.HttpMethod;
+import com.duangframework.sdk.exception.SdkException;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -24,7 +25,12 @@ public class ClientKit {
     private boolean isRestfulApi;
 
     private ClientKit() {
-        sdkClient = new SdkClient(SdkUtils.getEndPoint(), SdkUtils.getAppKey(), SdkUtils.getAppSecret());
+//        sdkClient = new SdkClient(SdkUtils.getEndPoint(), SdkUtils.getAppKey(), SdkUtils.getAppSecret());
+        try {
+            sdkClient = SdkClient.getInstance();
+        }catch (Exception e) {
+            throw new SdkException(1, "请先初始化Client:" + e.getMessage());
+        }
     }
 
     public static ClientKit duang() {

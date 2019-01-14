@@ -61,5 +61,10 @@
       <artifactId>duang-encrypt</artifactId>
       <version>${encrypt.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.duangframework.encrypt</groupId>
+      <artifactId>duang-encrypt</artifactId>
+      <version>${encrypt.version}</version>
+    </dependency>
   </dependencies>
 </project>

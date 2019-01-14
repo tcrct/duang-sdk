@@ -51,8 +51,14 @@ public class Demo
     }
 
     private static void demo2(CreateUserDto createUserDto) {
+
+        String endpoint = "http://192.168.100.99:9090";
+        String appkey = "5c39cc2896accd36300b18d2";
+        String appsecret = "5c3950b696a5c39cc2896accd36300b18d2";
+        String callbackUrl = "";
+
         // 可以设置为全局变量
-        SdkClient client = new SdkClient(SdkUtils.getEndPoint(), SdkUtils.getAppKey(), SdkUtils.getAppSecret(), SdkUtils.isParamEncrypt());
+        SdkClient client = new SdkClient(endpoint, appkey, appsecret, callbackUrl);
         SdkResponse response = client.execute(new CreateUserRequest(createUserDto));
         System.out.println(response.getResult());
     }

@@ -30,22 +30,36 @@ public class SdkClient {
     private CredentialsProvider credentialsProvider;
     // 配置对象
     private ClientConfiguration configuration;
-    // 是否参数加密码后发送请求
-    private boolean isParamEncrypt;
+    // 是否参数加密码后发送请求(默认开启)
+    private static boolean isParamEncrypt = true;
+    // 回调地址
+    private String callBackUrl;
+
+    private static SdkClient  _sdkClient;
 
     public SdkClient(String endpoint, String appKey, String appSecret) {
-        this(endpoint, new CredentialsProvider(appKey, appSecret), false, new ClientConfiguration());
+        this(endpoint, new CredentialsProvider(appKey, appSecret), isParamEncrypt, "", new ClientConfiguration());
     }
 
-    public SdkClient(String endpoint, String appKey, String appSecret, Boolean isParamEncrypt) {
-        this(endpoint, new CredentialsProvider(appKey, appSecret), isParamEncrypt, new ClientConfiguration());
+    public SdkClient(String endpoint, String appKey, String appSecret, String callBackUrl) {
+        this(endpoint, new CredentialsProvider(appKey, appSecret), isParamEncrypt, callBackUrl, new ClientConfiguration());
     }
 
-    public SdkClient(String endpoint, CredentialsProvider credentialsProvider, Boolean isParamEncrypt, ClientConfiguration  config) {
+    public SdkClient(String endpoint, String appKey, String appSecret, Boolean isParamEncrypt, String callBackUrl) {
+        this(endpoint, new CredentialsProvider(appKey, appSecret), isParamEncrypt, callBackUrl, new ClientConfiguration());
+    }
+
+    public SdkClient(String endpoint, CredentialsProvider credentialsProvider, Boolean isParamEncrypt, String callBackUrl, ClientConfiguration  config) {
         setEndPoint(endpoint);
         this.credentialsProvider = credentialsProvider;
         this.configuration = config;
         this.isParamEncrypt = isParamEncrypt;
+        this.callBackUrl = callBackUrl;
+        _sdkClient = this;
+    }
+
+    public static SdkClient getInstance() {
+        return _sdkClient;
     }
 
 
@@ -91,7 +105,7 @@ public class SdkClient {
     private Map<String, String> builderHeader(String appKey, AbstractSdkRequest request) {
         Map<String, String> headers = request.getHeaderMap();  // 自定义的请求头
         Map<String, String> headerMap = new HashMap<String, String>();     // 框架需要的请求头
-        headerMap.put(HttpHeaderNames.AUTHORIZATION, Constant.DUANG_FIELD_PREFIX + "-" + appKey);
+        headerMap.put(HttpHeaderNames.AUTHORIZATION, Constant.FRAMEWORK_OWNER + "-" + appKey);
         headerMap.put(HttpHeaderNames.DATE, Long.toString(System.currentTimeMillis()));
         headerMap.put(HttpHeaderNames.USER_AGENT, SdkUtils.getDefaultUserAgent());
         headerMap.put(HttpHeaderNames.ACCEPT, request.getContentType());
