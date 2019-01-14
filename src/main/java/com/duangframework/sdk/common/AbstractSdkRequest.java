@@ -2,6 +2,7 @@ package com.duangframework.sdk.common;
 
 import com.duangframework.sdk.constant.Constant;
 import com.duangframework.sdk.enums.ContentType;
+import com.duangframework.sdk.exception.SdkException;
 import com.duangframework.sdk.utils.DuangId;
 import com.duangframework.sdk.utils.SdkUtils;
 
@@ -20,6 +21,7 @@ public abstract class AbstractSdkRequest implements SdkRequest {
     protected boolean isRestfulApi = false;
     private Map<String, String> headerMap = new HashMap<String, String>();
     private KvModle kvModle;
+    protected String callbackUrl;
 
     public AbstractSdkRequest(SdkDto sdkDto) {
         this("", sdkDto);

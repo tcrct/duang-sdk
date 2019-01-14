@@ -33,7 +33,7 @@ public class SdkClient {
     // 是否参数加密码后发送请求(默认开启)
     private static boolean isParamEncrypt = true;
     // 回调地址
-    private String callBackUrl;
+    private String callBackUrl = "";
 
     private static SdkClient  _sdkClient;
 
@@ -152,7 +152,7 @@ public class SdkClient {
             // 将签名字符串设置到header头
             headerMap.put(Constant.DUANG_HEADER_SIGN_KEY, signString);
         }
-        System.out.println("@@@@@@@@@@@: " + body);
+//        System.out.println("@@@@@@@@@@@: " + body);
         if(method.equals(HttpMethod.GET)) {
             httpRequest = HttpRequest.get(body, true).headers(headerMap);
         } else if (method.equals(HttpMethod.POST)) {

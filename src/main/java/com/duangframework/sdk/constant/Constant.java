@@ -12,5 +12,7 @@ public class Constant {
 
     public static final String USER_AGENT_PREFIX = "duang-sdk-java";
     public static final String FRAMEWORK_OWNER = "duang";
+    public static final String CALLBACK_URL_FIELD = "callbackUrl";
+
 
 }
