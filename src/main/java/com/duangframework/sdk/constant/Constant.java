@@ -6,8 +6,6 @@ public class Constant {
     public static String DUANG_SIGN_KEY = "signature";
     public static String DUANG_ENCRYPT = "encrypt-param";
     public static String DUANG_HEADER_SIGN_KEY = "x-ca-signature";
-    public static final String TOKEN_FIELD = "token";
-    public static final String DATA_FIELD = "data";
     public static final String REQUEST_API = "REQUEST_API";
     public static final String REQUEST_ID = "requestid";
     public static String VERSION = "1.0.0";

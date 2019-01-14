@@ -62,6 +62,9 @@ public class SdkClient {
         return _sdkClient;
     }
 
+    public String getCallBackUrl() {
+        return callBackUrl;
+    }
 
     public URI getEndPoint() {
         return endPoint;
