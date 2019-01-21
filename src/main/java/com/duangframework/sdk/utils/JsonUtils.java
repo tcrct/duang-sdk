@@ -1,8 +1,10 @@
 package com.duangframework.sdk.utils;
 
-import com.duangframework.sdk.common.SdkDto;
+import com.duangframework.sdk.constant.Constant;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -12,6 +14,8 @@ import java.util.Map;
  * Created by laotang on 2019/1/6.
  */
 public class JsonUtils {
+
+    private static final SimpleDateFormat SDF =  new SimpleDateFormat(Constant.DATA_FORMAT);
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static String toJson(Object valueObj) {
@@ -23,7 +27,23 @@ public class JsonUtils {
         }
 
         if (valueObj instanceof Integer) {
-            return valueObj.toString();
+            return "\"" +Integer.parseInt(valueObj.toString()) + "\"";
+        }
+
+        if (valueObj instanceof Double) {
+            return "\"" +Double.valueOf(valueObj.toString()) + "\"";
+        }
+
+        if (valueObj instanceof Long) {
+            return "\"" +Long.valueOf(valueObj.toString()) + "\"";
+        }
+
+        if (valueObj instanceof Date) {
+            try {
+                return "\"" + SDF.format(valueObj) + "\"";
+            } catch (Exception e) {
+                return "";
+            }
         }
 
         if (valueObj instanceof Map) {

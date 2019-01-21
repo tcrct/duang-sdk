@@ -1,7 +1,6 @@
 package com.duangframework.sdk.common;
 
 import com.duangframework.encrypt.core.EncryptFactory;
-import com.duangframework.encrypt.core.EncryptType;
 import com.duangframework.encrypt.core.EncryptUtils;
 import com.duangframework.sdk.constant.Constant;
 import com.duangframework.sdk.enums.HttpMethod;
@@ -109,7 +108,6 @@ public class SdkClient {
         Map<String, String> headers = request.getHeaderMap();  // 自定义的请求头
         Map<String, String> headerMap = new HashMap<String, String>();     // 框架需要的请求头
         headerMap.put(HttpHeaderNames.AUTHORIZATION, Constant.FRAMEWORK_OWNER + "-" + appKey);
-        headerMap.put(HttpHeaderNames.DATE, Long.toString(System.currentTimeMillis()));
         headerMap.put(HttpHeaderNames.USER_AGENT, SdkUtils.getDefaultUserAgent());
         headerMap.put(HttpHeaderNames.ACCEPT, request.getContentType());
         headerMap.put(HttpHeaderNames.CONTENT_TYPE, request.getContentType());

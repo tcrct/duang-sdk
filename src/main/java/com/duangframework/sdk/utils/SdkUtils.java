@@ -25,11 +25,14 @@ import com.duangframework.sdk.common.SdkDto;
 import com.duangframework.sdk.constant.Constant;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class SdkUtils {
 
-
+    private static final ConcurrentMap<String, Field[]> FIELD_MAPPING_MAP = new ConcurrentHashMap<String, Field[]>();
 
     private static String defaultUserAgent = null;
 
@@ -99,20 +102,20 @@ public class SdkUtils {
     }
 
     public static KvModle dto2KvModle(SdkDto sdkDto) {
-        Map<String,Object> restfulApiMap = new HashMap<>();
-        Map<String,Object> dtoMap = new HashMap<>();
+        Map<String,Object> restfulApiMap = new HashMap<String, Object>();
+        Map<String,Object> dtoMap = new HashMap<String, Object>();
         dto2Map(sdkDto, restfulApiMap, dtoMap);
         return new KvModle(restfulApiMap, dtoMap);
     }
 
     private static void dto2Map(SdkDto sdkDto, Map<String,Object> restfulApiMap, Map<String,Object> dtoMap) {
-        Field[] fields = sdkDto.getClass().getDeclaredFields();
+        Field[] fields = getFields(sdkDto.getClass());
         if(null != fields) {
             for(Field field : fields) {
                 Object value = getFieldValue(sdkDto, field);
                 if(null != value) {
                     if(value instanceof SdkDto) {
-                        Map<String, Object> itemMap = new HashMap<>();
+                        Map<String, Object> itemMap = new HashMap<String, Object>();
                         dto2Map((SdkDto) value, restfulApiMap, itemMap);
                         dtoMap.put(field.getName(), itemMap);
                     } else {
@@ -130,5 +133,55 @@ public class SdkUtils {
                 }
             }
         }
+    }
+
+    /**
+     * 根据class对象反射出所有属性字段，静态字段除外
+     * @param cls
+     * @return
+     */
+    public static Field[] getFields(Class<?> cls){
+        String key = cls.getName();
+        Field[] field = null;
+        if(FIELD_MAPPING_MAP.containsKey(key)){
+            field = FIELD_MAPPING_MAP.get(key);
+        }else{
+            field = getAllFields(cls);
+            FIELD_MAPPING_MAP.put(key, field);
+        }
+        return (null == field) ? null : field;
+    }
+
+    /**
+     * 取出类里的所有字段
+     * @param cls
+     * @return	Field[]
+     */
+    private static Field[] getAllFields(Class<?> cls) {
+        List<Field> fieldList = new ArrayList<Field>();
+        fieldList.addAll(filterStaticFields(cls.getDeclaredFields()));
+        Class<?> parent = cls.getSuperclass();
+        //查找父类里的属性字段
+        while(null != parent && parent != Object.class){
+            fieldList.addAll(filterStaticFields(parent.getDeclaredFields()));
+            parent = parent.getSuperclass();
+        }
+        return fieldList.toArray(new Field[fieldList.size()]);
+    }
+
+    /**
+     * 过滤静态方法
+     * @param fields
+     * @return
+     */
+    private static List<Field> filterStaticFields(Field[] fields){
+        List<Field> result = new ArrayList<Field>();
+        for (Field field : fields) {
+            if(!Modifier.isStatic(field.getModifiers())){		//静态字段不取
+                field.setAccessible(true);	//设置可访问私有变量
+                result.add(field);
+            }
+        }
+        return result;
     }
 }
