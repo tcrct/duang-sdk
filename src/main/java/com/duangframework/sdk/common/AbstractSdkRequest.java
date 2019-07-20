@@ -8,10 +8,12 @@ import com.duangframework.sdk.utils.SdkUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Created by laotang on 2018/12/31.
+ * @author laotang
+ * @date 2018/12/31.
  */
 public abstract class AbstractSdkRequest implements SdkRequest {
 
@@ -19,29 +21,39 @@ public abstract class AbstractSdkRequest implements SdkRequest {
     protected String requestApi;
     protected SdkDto sdkDto;
     protected boolean isRestfulApi = false;
-    private Map<String, String> headerMap = new HashMap<String, String>();
+    protected Map<String, String> headerMap = new HashMap<String, String>();
+    protected Map<String, Object> paramsMap = new HashMap<String,Object>();
     private KvModle kvModle;
     protected String callbackUrl;
 
-    public AbstractSdkRequest(SdkDto sdkDto) {
-        this("", sdkDto);
+    public AbstractSdkRequest(){
+
     }
 
-    public AbstractSdkRequest(String token, SdkDto sdkDto) {
-        this(token, new HashMap<String, String>(), sdkDto);
+    public AbstractSdkRequest(Object object) {
+        this("", object);
     }
 
-    public AbstractSdkRequest(Map<String,String> headerMap, SdkDto sdkDto) {
-        this("", headerMap, sdkDto);
+    public AbstractSdkRequest(String token, Object object) {
+        this(token, new HashMap<String, String>(), object);
     }
 
-    public AbstractSdkRequest(String token, Map<String,String> headerMap, SdkDto sdkDto) {
+    public AbstractSdkRequest(Map<String,String> headerMap, Object object) {
+        this("", headerMap, object);
+    }
+
+    public AbstractSdkRequest(String token, Map<String,String> headerMap, Object object) {
         this.token = (null ==token || token.isEmpty()) ? new DuangId().toString() : token;
         if(null != headerMap &&!headerMap.isEmpty()) {
             this.headerMap.putAll(headerMap);
         }
-        this.sdkDto = sdkDto;
-        this.kvModle = SdkUtils.dto2KvModle(sdkDto);
+        if(object instanceof  SdkDto) {
+            this.sdkDto = (SdkDto) object;
+            this.kvModle = SdkUtils.dto2KvModle(sdkDto);
+        } else if(object instanceof List) {
+
+        }
+
     }
 
     public SdkDto getSdkDto() {
@@ -64,23 +76,27 @@ public abstract class AbstractSdkRequest implements SdkRequest {
         return ContentType.JSON.getValue();
     }
 
-    protected void setRequestApi(String requestApi, SdkDto sdkDto) {
+    protected void setRequestApi(String requestApi, Map<String,Object> convertMap) {
         boolean isRestful = isRestful();
         if(!isRestful) {
             isRestful = requestApi.indexOf("{") > -1 && requestApi.indexOf("}") > -1;
         }
         if(isRestful) {
-            this.requestApi = buildRestfulRequestApi(requestApi, sdkDto);
+            this.requestApi = buildRestfulRequestApi(requestApi, convertMap);
         } else {
             this.requestApi = requestApi;
         }
     }
 
-    private String buildRestfulRequestApi(String requestApi, SdkDto sdkDto) {
+    protected void setRequestApi(String requestApi, SdkDto sdkDto) {
+        Map<String, Object> convertMap = kvModle.getRestfulApiMap();
+        setRequestApi(requestApi, convertMap);
+    }
+
+    private String buildRestfulRequestApi(String requestApi, Map<String, Object> convertMap) {
         if(null == requestApi ||requestApi.isEmpty()){
             throw new NullPointerException("reqeustApi is null");
         }
-        Map<String, Object> convertMap = kvModle.getRestfulApiMap();
         if(null == convertMap || convertMap.isEmpty()) {
             return requestApi;
         }
@@ -99,6 +115,10 @@ public abstract class AbstractSdkRequest implements SdkRequest {
 
     @Override
     public Map<String, Object> getParamMap() {
-        return kvModle.getDtoMap();
+        if(paramsMap.isEmpty()) {
+            return kvModle.getDtoMap();
+        } else {
+            return paramsMap;
+        }
     }
 }

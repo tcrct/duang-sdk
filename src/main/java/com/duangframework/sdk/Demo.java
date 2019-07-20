@@ -52,7 +52,7 @@ public class Demo
 
     private static void demo2(CreateUserDto createUserDto) {
 
-        String endpoint = "http://192.168.100.99:9090";
+        String endpoint = "http://192.168.100.10:9090";
         String appkey = "5c39cc2896accd36300b18d2";
         String appsecret = "5c3950b696a5c39cc2896accd36300b18d2";
         String callbackUrl = "";

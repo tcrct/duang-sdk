@@ -1,10 +1,12 @@
 package com.duangframework.sdk.utils;
 
+import com.duangframework.exception.ValidatorException;
 import com.duangframework.sdk.common.*;
 import com.duangframework.sdk.constant.Constant;
 import com.duangframework.sdk.enums.ContentType;
 import com.duangframework.sdk.enums.HttpMethod;
 import com.duangframework.sdk.exception.SdkException;
+import com.duangframework.vtor.annotation.VtorKit;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -53,6 +55,11 @@ public class ClientKit {
     }
 
     public ClientKit params(SdkDto dto) {
+        try {
+            VtorKit.validate(dto);
+        } catch (Exception ve) {
+            throw new ValidatorException("验证dto参数时：" + ve.getMessage(), ve);
+        }
         this.sdkDto = dto;
         return this;
     }

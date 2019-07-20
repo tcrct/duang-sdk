@@ -9,25 +9,23 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>duang-sdk</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>http://www.duangframework.com</url>
 
   <distributionManagement>
     <repository>
       <id>nexus</id>
       <name>Releases</name>
-      <url>http://192.168.100.100:7071/repository/maven-releases/</url>
+      <url>http://dev.signetz.com:7071/repository/maven-releases/</url>
     </repository>
     <snapshotRepository>
       <id>nexus</id>
       <name>Snapshot</name>
-      <url>http://192.168.100.100:7071/repository/maven-snapshots/</url>
+      <url>http://dev.signetz.com:7071/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
   <build>
     <defaultGoal>compile</defaultGoal>
-    <finalName>page</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -52,6 +50,8 @@
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <encrypt.version>1.0-SNAPSHOT</encrypt.version>
+    <slf4j.version>1.7.13</slf4j.version>
+    <logback.version>1.1.3</logback.version>
   </properties>
 
   <dependencies>
@@ -60,10 +60,17 @@
       <artifactId>duang-encrypt</artifactId>
       <version>${encrypt.version}</version>
     </dependency>
+    <!-- slf4j-->
     <dependency>
-      <groupId>com.duangframework.encrypt</groupId>
-      <artifactId>duang-encrypt</artifactId>
-      <version>${encrypt.version}</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <!-- logback-->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
     </dependency>
   </dependencies>
 </project>

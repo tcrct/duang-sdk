@@ -52,7 +52,7 @@ public class SdkClient {
         setEndPoint(endpoint);
         this.credentialsProvider = credentialsProvider;
         this.configuration = config;
-        this.isParamEncrypt = isParamEncrypt;
+        SdkClient.isParamEncrypt = isParamEncrypt;
         this.callBackUrl = callBackUrl;
         _sdkClient = this;
     }
@@ -134,6 +134,7 @@ public class SdkClient {
         api = (api.startsWith("/") ? api : "/"+ api);
         String url = endPoint.toString() + api;
         Map<String,Object> paramsMap = request.getParamMap();
+        paramsMap.put(Constant.CALLBACK_URL_FIELD, getCallBackUrl());
         Map<String,String> headerMap = builderHeader(appKey, request);
         // 请求类型
         HttpMethod method = request.getMethod();
