@@ -153,11 +153,11 @@ public class SdkClient {
         }
 //        System.out.println("@@@@@@@@@@@: " + body);
         if(method.equals(HttpMethod.GET)) {
-            httpRequest = HttpRequest.get(body, true).headers(headerMap);
+            httpRequest = HttpRequest.get(body, true).trustAllCerts().trustAllHosts().headers(headerMap);
         } else if (method.equals(HttpMethod.POST)) {
-            httpRequest = HttpRequest.post(url, true).headers(headerMap).send(body.getBytes());
+            httpRequest = HttpRequest.post(url, true).trustAllCerts().trustAllHosts().headers(headerMap).send(body.getBytes());
         } else if (method.equals(HttpMethod.OPTIONS)) {
-            httpRequest = HttpRequest.options(url);
+            httpRequest = HttpRequest.options(url).trustAllCerts();
         } else {
             throw new IllegalArgumentException("暂不支持[\"" + method.name() +"\"]请求！");
         }
