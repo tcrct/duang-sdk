@@ -157,7 +157,7 @@ public class SdkClient {
         } else if (method.equals(HttpMethod.POST)) {
             httpRequest = HttpRequest.post(url, true).trustAllCerts().trustAllHosts().headers(headerMap).send(body.getBytes());
         } else if (method.equals(HttpMethod.OPTIONS)) {
-            httpRequest = HttpRequest.options(url).trustAllCerts();
+            httpRequest = HttpRequest.options(url).trustAllCerts().trustAllHosts();
         } else {
             throw new IllegalArgumentException("暂不支持[\"" + method.name() +"\"]请求！");
         }
